@@ -1,0 +1,4 @@
+com\uscms\controller\SportController.class
+com\uscms\entity\Sport.class
+com\uscms\UscmsApplication.class
+com\uscms\repository\SportRepository.class

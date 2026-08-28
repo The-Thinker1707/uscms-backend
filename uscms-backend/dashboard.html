@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USCMS - User Sports Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #6366f1;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; padding: 2.5rem 1.5rem; }
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem; }
+        .brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; }
+        .brand-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), var(--accent)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; color: #fff; }
+        .brand-title { font-size: 1.5rem; font-weight: 800; }
+        
+        .user-nav { display: flex; align-items: center; gap: 1rem; }
+        .user-badge { background: var(--surface); border: 1px solid var(--border); padding: 0.4rem 0.85rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
+        .avatar-sm { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; }
+        .btn-logout { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-logout:hover { background: var(--danger); color: #fff; }
+
+        .welcome-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin-bottom: 2.5rem; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+        .welcome-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, var(--primary), var(--accent)); }
+        
+        .role-notice { margin-top: 0.5rem; font-size: 0.85rem; font-weight: 700; padding: 0.4rem 0.75rem; border-radius: 6px; display: inline-block; }
+        .role-notice.management { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .role-notice.athlete { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); }
+
+        .section-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.25s; }
+        .card:hover { transform: translateY(-4px); border-color: #475569; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .card-title { font-size: 1.2rem; font-weight: 700; }
+        .badge { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+
+        .schedule-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.85rem; }
+        .schedule-title { font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 0.25rem; }
+        
+        .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border); gap: 0.5rem; }
+        .action-group { display: flex; gap: 0.5rem; align-items: center; }
+
+        .btn-action { background: linear-gradient(135deg, var(--primary), #4f46e5); color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-action:hover { opacity: 0.9; }
+
+        .btn-delete { background: rgba(239, 68, 68, 0.12); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.5rem 0.85rem; border-radius: 6px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-delete:hover { background: var(--danger); color: #fff; }
+
+        .btn-join { background: rgba(6, 182, 212, 0.15); color: var(--accent); border: 1px solid rgba(6, 182, 212, 0.3); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-join:hover { background: var(--accent); color: #0f172a; }
+
+        #toast-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.5rem; z-index: 1000; }
+        .toast { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; box-shadow: var(--shadow); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <a href="index.html" class="brand">
+                <div class="brand-icon">U</div>
+                <div>
+                    <div class="brand-title">USCMS</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">User Personal Portal</div>
+                </div>
+            </a>
+            <div class="user-nav">
+                <div class="user-badge">
+                    <div class="avatar-sm" id="user-avatar">M</div>
+                    <span id="user-name-display">Loading...</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="welcome-card">
+            <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Welcome back, <span id="welcome-name" style="color: var(--accent);">Member</span>!</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                Student ID: <strong id="display-studentid" style="color: var(--text-main);">--</strong> &bull; 
+                Role: <strong id="display-role" style="color: var(--success);">--</strong>
+            </p>
+            <div id="role-badge-notice"></div>
+        </div>
+
+        <div class="section-title">My Managed Sports & Programs</div>
+        <div id="enrolled-grid" class="grid">Loading enrolled sports...</div>
+
+        <div class="section-title">Available Sports to Join</div>
+        <div id="available-grid" class="grid">Loading available sports...</div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/sports';
+        let currentUser = JSON.parse(localStorage.getItem('uscms_user'));
+
+        if (!currentUser) {
+            window.location.href = 'auth.html';
+        }
+
+        const isManagementRole = currentUser.role === 'Coach' || currentUser.role === 'Captain';
+
+        function renderUserInfo() {
+            document.getElementById('user-name-display').textContent = currentUser.name;
+            document.getElementById('welcome-name').textContent = currentUser.name;
+            document.getElementById('user-avatar').textContent = currentUser.name.charAt(0);
+            document.getElementById('display-studentid').textContent = currentUser.studentId;
+            document.getElementById('display-role').textContent = currentUser.role;
+
+            const noticeEl = document.getElementById('role-badge-notice');
+            if (isManagementRole) {
+                noticeEl.className = 'role-notice management';
+                noticeEl.textContent = '🛡️ Management Privileges Active: You can delete programs and manage squad rosters.';
+            } else {
+                noticeEl.className = 'role-notice athlete';
+                noticeEl.textContent = '👤 Standard Athlete View: Program deletion is reserved for Coaches & Captains.';
+            }
+        }
+
+        function showToast(msg, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.borderColor = isError ? 'var(--danger)' : 'var(--success)';
+            toast.innerHTML = `${isError ? '⚠️' : '✅'} ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function loadSportsData() {
+            try {
+                const response = await fetch(API_URL);
+                const allSports = await response.json();
+
+                const enrolledGrid = document.getElementById('enrolled-grid');
+                const availableGrid = document.getElementById('available-grid');
+
+                const enrolledList = allSports.filter(s => currentUser.enrolledSports.includes(s.id));
+                const availableList = allSports.filter(s => !currentUser.enrolledSports.includes(s.id));
+
+                if (enrolledList.length === 0) {
+                    enrolledGrid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1;">You have not registered for any sports programs yet.</p>';
+                } else {
+                    enrolledGrid.innerHTML = enrolledList.map(sport => `
+                        <div class="card">
+                            <div>
+                                <div class="card-header">
+                                    <h3 class="card-title">${sport.name}</h3>
+                                    <span class="badge">${sport.slug}</span>
+                                </div>
+                                <p style="font-size: 0.9rem; color: var(--text-muted);">${sport.description || 'Varsity program.'}</p>
+                                <div class="schedule-box">
+                                    <div class="schedule-title">Next Scheduled Fixture</div>
+                                    <div style="font-weight: 700;">Saturday &bull; 14:00 PM</div>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <span style="font-size: 0.85rem; color: var(--success); font-weight: 600;">● Active</span>
+                                <div class="action-group">
+                                    <a href="sport.html?id=${sport.id}" class="btn-action">Analytics</a>
+                                    ${isManagementRole ? `<button class="btn-delete" onclick="deleteSport(${sport.id})">Delete</button>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                if (availableList.length === 0) {
+                    availableGrid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1;">You are registered in all available sports!</p>';
+                } else {
+                    availableGrid.innerHTML = availableList.map(sport => `
+                        <div class="card">
+                            <div>
+                                <div class="card-header">
+                                    <h3 class="card-title">${sport.name}</h3>
+                                    <span class="badge">${sport.slug}</span>
+                                </div>
+                                <p style="font-size: 0.9rem; color: var(--text-muted);">${sport.description || 'Open registration.'}</p>
+                            </div>
+                            <div class="card-footer" style="margin-top: 1.5rem;">
+                                <span style="font-size: 0.85rem; color: var(--accent); font-weight: 600;">Cap: ${sport.capacity}</span>
+                                <div class="action-group">
+                                    <button class="btn-join" onclick="registerForSport(${sport.id}, '${sport.name}')">Register</button>
+                                    ${isManagementRole ? `<button class="btn-delete" onclick="deleteSport(${sport.id})">Delete</button>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function deleteSport(id) {
+            if (!confirm(`Are you sure you want to delete sport program #${id}?`)) return;
+
+            try {
+                const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    // Remove from user's local state if present
+                    currentUser.enrolledSports = currentUser.enrolledSports.filter(sId => sId !== id);
+                    localStorage.setItem('uscms_user', JSON.stringify(currentUser));
+                    
+                    showToast('Program successfully deleted.');
+                    loadSportsData();
+                } else {
+                    showToast('Failed to delete program', true);
+                }
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        function registerForSport(sportId, sportName) {
+            currentUser.enrolledSports.push(sportId);
+            localStorage.setItem('uscms_user', JSON.stringify(currentUser));
+            showToast(`Successfully registered for ${sportName}!`);
+            loadSportsData();
+        }
+
+        function logout() {
+            localStorage.removeItem('uscms_user');
+            window.location.href = 'auth.html';
+        }
+
+        renderUserInfo();
+        loadSportsData();
+    </script>
+</body>
+</html>

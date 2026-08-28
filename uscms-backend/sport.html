@@ -1,0 +1,401 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USCMS - Advanced Sport Analytics & Squad Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-card: #0f172a;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #6366f1;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; padding: 2.5rem 1.5rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        .nav-back { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.9rem; margin-bottom: 2rem; transition: opacity 0.2s; }
+        .nav-back:hover { opacity: 0.8; }
+
+        .dashboard-header { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+        .dashboard-header::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, var(--primary), var(--accent)); }
+
+        .header-meta { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.75rem; }
+        .sport-title { font-size: 2.25rem; font-weight: 800; }
+        .sport-slug { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .sport-desc { font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; max-width: 800px; }
+
+        .tabs { display: flex; gap: 0.75rem; border-bottom: 1px solid var(--border); margin-bottom: 1.75rem; overflow-x: auto; }
+        .tab-btn { background: none; border: none; color: var(--text-muted); padding: 0.75rem 1.25rem; font-size: 0.95rem; font-weight: 700; font-family: inherit; cursor: pointer; position: relative; transition: color 0.2s; whitespace: nowrap; }
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active { color: var(--accent); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--accent); }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Game Progress Components */
+        .live-game-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; margin-bottom: 2rem; box-shadow: var(--shadow); }
+        .game-status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+        .live-pill { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 800; display: inline-flex; align-items: center; gap: 0.5rem; text-transform: uppercase; }
+        .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--danger); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        .scoreboard { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; text-align: center; gap: 1.5rem; background: var(--bg); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+        .team-name { font-size: 1.2rem; font-weight: 800; }
+        .score-val { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
+        .vs-tag { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+        .progress-trackers { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        .tracker-box { background: var(--bg); padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border); }
+        .tracker-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .bar-bg { background: var(--surface); height: 10px; border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+        .bar-fill-primary { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 999px; }
+        .bar-fill-success { height: 100%; background: linear-gradient(90deg, #059669, var(--success)); border-radius: 999px; }
+
+        /* Head-to-Head Comparison */
+        .comparison-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .player-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+        .select-player { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text-main); padding: 0.75rem; border-radius: 8px; font-family: inherit; font-size: 0.95rem; font-weight: 700; outline: none; margin-bottom: 1.25rem; }
+        
+        .stat-bar-group { display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.5rem; }
+        .stat-bar-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem; }
+        
+        .badge-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .badge-strength { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+        .badge-weakness { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+
+        .scouting-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+        .scouting-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; letter-spacing: 0.05em; }
+
+        /* Table Components */
+        .users-table-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+        .table-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .table-title { font-size: 1.1rem; font-weight: 700; }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(15, 23, 42, 0.4); padding: 0.85rem 1.5rem; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+        td { padding: 1rem 1.5rem; font-size: 0.9rem; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+        .user-profile { display: flex; align-items: center; gap: 0.75rem; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; }
+
+        .role-badge { padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+        .role-captain { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .role-athlete { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); }
+        .role-coach { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="nav-back">Back to All Sports</a>
+
+        <div id="dashboard-header-container">
+            <p style="color: var(--text-muted);">Loading sport metadata...</p>
+        </div>
+
+        <div class="tabs">
+            <button id="tab-btn-game" class="tab-btn active" onclick="switchTab('game')">Live Game Progress</button>
+            <button id="tab-btn-h2h" class="tab-btn" onclick="switchTab('h2h')">Head-to-Head Player Comparison</button>
+            <button id="tab-btn-squad" class="tab-btn" onclick="switchTab('squad')">Squad Roster & Qualitative Profiles</button>
+        </div>
+
+        <div id="tab-game" class="tab-content active">
+            <div class="live-game-card">
+                <div class="game-status-bar">
+                    <span class="live-pill"><span class="pulse-dot"></span> Live Match &bull; Q3 08:42</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Venue: Main University Arena &bull; Ref: M. Jenkins</span>
+                </div>
+
+                <div class="scoreboard">
+                    <div>
+                        <div class="team-name" id="home-team-name">USCMS Varsity</div>
+                        <span style="font-size: 0.8rem; color: var(--success); font-weight: 700;">Home Team</span>
+                    </div>
+                    <div>
+                        <div class="score-val">74 - 68</div>
+                        <div class="vs-tag">3rd Quarter</div>
+                    </div>
+                    <div>
+                        <div class="team-name">Technikon Eagles</div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">Visiting Rivals</span>
+                    </div>
+                </div>
+
+                <div class="progress-trackers">
+                    <div class="tracker-box">
+                        <div class="tracker-header">
+                            <span>Win Probability Model</span>
+                            <span style="color: var(--accent);">68% USCMS</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill-primary" style="width: 68%;"></div>
+                        </div>
+                    </div>
+                    <div class="tracker-box">
+                        <div class="tracker-header">
+                            <span>Game Momentum Index</span>
+                            <span style="color: var(--success);">High Offensive Flow</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill-success" style="width: 82%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-h2h" class="tab-content">
+            <div class="comparison-grid">
+                <div class="player-card">
+                    <label style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Select Primary Player</label>
+                    <select id="select-player-a" class="select-player" onchange="updateComparison()"></select>
+                    
+                    <div class="stat-bar-group" id="stats-player-a"></div>
+
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Key Strengths</div>
+                    <div class="badge-group" id="strengths-player-a"></div>
+
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Development Areas / Weaknesses</div>
+                    <div class="badge-group" id="weaknesses-player-a"></div>
+
+                    <div class="scouting-box">
+                        <div class="scouting-title">Qualitative Scouting Note</div>
+                        <span id="scouting-player-a">Loading profile...</span>
+                    </div>
+                </div>
+
+                <div class="player-card">
+                    <label style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Select Comparison Player</label>
+                    <select id="select-player-b" class="select-player" onchange="updateComparison()"></select>
+
+                    <div class="stat-bar-group" id="stats-player-b"></div>
+
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Key Strengths</div>
+                    <div class="badge-group" id="strengths-player-b"></div>
+
+                    <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Development Areas / Weaknesses</div>
+                    <div class="badge-group" id="weaknesses-player-b"></div>
+
+                    <div class="scouting-box">
+                        <div class="scouting-title">Qualitative Scouting Note</div>
+                        <span id="scouting-player-b">Loading profile...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-squad" class="tab-content">
+            <div class="users-table-container">
+                <div class="table-header">
+                    <div class="table-title">Full Squad Qualitative & Quantitative Directory</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player / Member</th>
+                            <th>Role</th>
+                            <th>Efficiency (PER)</th>
+                            <th>Qualitative Strengths</th>
+                            <th>Form Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="squad-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/sports';
+        const urlParams = new URLSearchParams(window.location.search);
+        const sportId = urlParams.get('id');
+
+        // Extended Statistical & Qualitative Player Dataset
+        const playerDataset = [
+            {
+                id: 1,
+                name: "Thabo Mokoena",
+                role: "Captain",
+                roleClass: "role-captain",
+                per: 24.8,
+                metrics: { offense: 92, defense: 85, stamina: 90, iq: 95 },
+                strengths: ["Clutch Execution", "High Tactical IQ", "Vocal Leadership"],
+                weaknesses: ["Foul Susceptibility", "High Minutes Fatigue"],
+                scouting: "Exceptional floor general. Drives team tempo effectively during high-pressure late-game scenarios.",
+                form: "Peak Form"
+            },
+            {
+                id: 2,
+                name: "Jessica Smith",
+                role: "Athlete",
+                roleClass: "role-athlete",
+                per: 21.4,
+                metrics: { offense: 88, defense: 78, stamina: 94, iq: 84 },
+                strengths: ["Rapid Counter Transition", "Elite Perimeter Accuracy"],
+                weaknesses: ["Interior Box-out", "Physical Contact Deficits"],
+                scouting: "Highly dynamic wing player with rapid transition speed. Thrives in fast-break offensive setups.",
+                form: "Hot Streak"
+            },
+            {
+                id: 3,
+                name: "Khumbo Phiri",
+                role: "Athlete",
+                roleClass: "role-athlete",
+                per: 19.2,
+                metrics: { offense: 74, defense: 93, stamina: 88, iq: 89 },
+                strengths: ["Lockdown Perimeter Defense", "High Rebounding Rate"],
+                weaknesses: ["Free Throw Consistency", "Offensive Creation"],
+                scouting: "Defensive anchor. Consistently limits opponent's primary scoring threat to below-average shooting percentages.",
+                form: "Solid Form"
+            },
+            {
+                id: 4,
+                name: "Liam Naidoo",
+                role: "Athlete",
+                roleClass: "role-athlete",
+                per: 17.6,
+                metrics: { offense: 81, defense: 70, stamina: 82, iq: 79 },
+                strengths: ["High Acceleration", "Spatial Awareness"],
+                weaknesses: ["Turnover Under Heavy Press", "Defensive Rotation Speed"],
+                scouting: "Promising young prospect with natural explosive athleticism. Requires development in defensive coverage reading.",
+                form: "Developing"
+            }
+        ];
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        function populatePlayerDropdowns() {
+            const selectA = document.getElementById('select-player-a');
+            const selectB = document.getElementById('select-player-b');
+
+            selectA.innerHTML = playerDataset.map(p => `<option value="${p.id}">${p.name} (${p.role})</option>`).join('');
+            selectB.innerHTML = playerDataset.map(p => `<option value="${p.id}">${p.name} (${p.role})</option>`).join('');
+
+            selectA.value = playerDataset[0].id;
+            selectB.value = playerDataset[1].id;
+
+            updateComparison();
+        }
+
+        function renderPlayerCard(player, side) {
+            document.getElementById(`stats-player-${side}`).innerHTML = `
+                <div>
+                    <div class="stat-bar-label"><span>Offensive Rating</span><span>${player.metrics.offense} / 100</span></div>
+                    <div class="bar-bg"><div class="bar-fill-primary" style="width: ${player.metrics.offense}%;"></div></div>
+                </div>
+                <div>
+                    <div class="stat-bar-label"><span>Defensive Impact</span><span>${player.metrics.defense} / 100</span></div>
+                    <div class="bar-bg"><div class="bar-fill-primary" style="width: ${player.metrics.defense}%;"></div></div>
+                </div>
+                <div>
+                    <div class="stat-bar-label"><span>Stamina & Work Rate</span><span>${player.metrics.stamina} / 100</span></div>
+                    <div class="bar-bg"><div class="bar-fill-success" style="width: ${player.metrics.stamina}%;"></div></div>
+                </div>
+                <div>
+                    <div class="stat-bar-label"><span>Tactical IQ</span><span>${player.metrics.iq} / 100</span></div>
+                    <div class="bar-bg"><div class="bar-fill-success" style="width: ${player.metrics.iq}%;"></div></div>
+                </div>
+            `;
+
+            document.getElementById(`strengths-player-${side}`).innerHTML = 
+                player.strengths.map(s => `<span class="badge-strength">${s}</span>`).join('');
+
+            document.getElementById(`weaknesses-player-${side}`).innerHTML = 
+                player.weaknesses.map(w => `<span class="badge-weakness">${w}</span>`).join('');
+
+            document.getElementById(`scouting-player-${side}`).textContent = player.scouting;
+        }
+
+        function updateComparison() {
+            const pIdA = parseInt(document.getElementById('select-player-a').value);
+            const pIdB = parseInt(document.getElementById('select-player-b').value);
+
+            const playerA = playerDataset.find(p => p.id === pIdA);
+            const playerB = playerDataset.find(p => p.id === pIdB);
+
+            if (playerA) renderPlayerCard(playerA, 'a');
+            if (playerB) renderPlayerCard(playerB, 'b');
+        }
+
+        function renderSquadTable() {
+            const tbody = document.getElementById('squad-table-body');
+            tbody.innerHTML = playerDataset.map(p => `
+                <tr>
+                    <td>
+                        <div class="user-profile">
+                            <div class="avatar">${p.name.charAt(0)}</div>
+                            <div>
+                                <div style="font-weight: 700;">${p.name}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="role-badge ${p.roleClass}">${p.role}</span></td>
+                    <td style="font-weight: 800; color: var(--accent);">${p.per}</td>
+                    <td>
+                        <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                            ${p.strengths.map(s => `<span class="badge-strength">${s}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td><span style="font-weight: 700; color: var(--success);">${p.form}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadSportHeader() {
+            const container = document.getElementById('dashboard-header-container');
+            if (!sportId) {
+                container.innerHTML = `<div class="dashboard-header"><h1 class="sport-title">USCMS Varsity Program</h1><p class="sport-desc">Showing overall sports performance and squad metrics.</p></div>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/${sportId}`);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const sport = await response.json();
+                
+                document.getElementById('home-team-name').textContent = `USCMS ${sport.name}`;
+
+                container.innerHTML = `
+                    <div class="dashboard-header">
+                        <div class="header-meta">
+                            <h1 class="sport-title">${sport.name} Performance Dashboard</h1>
+                            <span class="sport-slug">${sport.slug}</span>
+                        </div>
+                        <p class="sport-desc">${sport.description || 'Comprehensive analytical view of performance metrics, qualitative scouting, and game progress.'}</p>
+                    </div>
+                `;
+            } catch (err) {
+                container.innerHTML = `<p style="color: var(--danger);">Failed to fetch sport metadata: ${err.message}</p>`;
+            }
+        }
+
+        loadSportHeader();
+        populatePlayerDropdowns();
+        renderSquadTable();
+    </script>
+</body>
+</html>
