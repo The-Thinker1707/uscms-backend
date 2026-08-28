@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -112,7 +112,7 @@
     <div id="toast-container"></div>
 
     <script>
-        const API_URL = 'http://localhost:8080/api/sports';
+        const API_URL = 'https://usms.up.railway.app/api/sports';
         let currentUser = JSON.parse(localStorage.getItem('uscms_user'));
 
         if (!currentUser) {
@@ -131,10 +131,10 @@
             const noticeEl = document.getElementById('role-badge-notice');
             if (isManagementRole) {
                 noticeEl.className = 'role-notice management';
-                noticeEl.textContent = '🛡️ Management Privileges Active: You can delete programs and manage squad rosters.';
+                noticeEl.textContent = '??? Management Privileges Active: You can delete programs and manage squad rosters.';
             } else {
                 noticeEl.className = 'role-notice athlete';
-                noticeEl.textContent = '👤 Standard Athlete View: Program deletion is reserved for Coaches & Captains.';
+                noticeEl.textContent = '?? Standard Athlete View: Program deletion is reserved for Coaches & Captains.';
             }
         }
 
@@ -143,7 +143,7 @@
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.style.borderColor = isError ? 'var(--danger)' : 'var(--success)';
-            toast.innerHTML = `${isError ? '⚠️' : '✅'} ${msg}`;
+            toast.innerHTML = `${isError ? '??' : '?'} ${msg}`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
@@ -176,7 +176,7 @@
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <span style="font-size: 0.85rem; color: var(--success); font-weight: 600;">● Active</span>
+                                <span style="font-size: 0.85rem; color: var(--success); font-weight: 600;">? Active</span>
                                 <div class="action-group">
                                     <a href="sport.html?id=${sport.id}" class="btn-action">Analytics</a>
                                     ${isManagementRole ? `<button class="btn-delete" onclick="deleteSport(${sport.id})">Delete</button>` : ''}
@@ -250,3 +250,4 @@
     </script>
 </body>
 </html>
+
